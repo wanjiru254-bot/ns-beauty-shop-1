@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NS Beauty Shop</title>
+<style>
+:root{--pink:#b94f78;--rose:#f8e8ee;--ink:#30232a;--cream:#fffaf8;--gold:#c49a52}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--cream);color:var(--ink)}
+header{background:linear-gradient(120deg,#4a2638,#a64e70);color:white;padding:22px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+header h1{margin:0;font-family:Georgia,serif;letter-spacing:1px}header p{margin:5px 0 0;color:#f8dce7}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 5%;background:white;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0001}
+button,.btn{border:0;border-radius:8px;padding:10px 14px;background:var(--pink);color:white;cursor:pointer;font-weight:bold}
+button:hover{filter:brightness(.93)}button.secondary{background:#ead6df;color:#54283d}button.danger{background:#9e3434}
+nav button{background:#f4e7ec;color:#54283d}nav button.active{background:var(--pink);color:white}
+main{max-width:1150px;margin:25px auto;padding:0 18px}.page{display:none}.page.active{display:block}
+h2{font-family:Georgia,serif;color:#71364f}.muted{color:#786b72}.hero{padding:28px;border-radius:16px;background:linear-gradient(120deg,#f6dce6,#fff4ed);margin-bottom:22px}
+.hero h2{font-size:30px;margin:0 0 8px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}
+input,select,textarea{padding:11px;border:1px solid #dfcbd3;border-radius:8px;background:white;max-width:100%;width:100%;font:inherit}
+label{font-size:13px;font-weight:bold;display:block;margin:8px 0 5px}.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;background:white;padding:16px;border-radius:12px;margin:15px 0}
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px}
+.card{background:white;border:1px solid #f0e1e7;border-radius:13px;padding:14px;box-shadow:0 4px 14px #54283d0a}
+.product-icon{height:115px;border-radius:10px;background:var(--rose);display:grid;place-items:center;font-size:48px}
+.card h3{margin:10px 0 5px}.price{font-weight:bold;color:#9e3f68;font-size:18px}.card small{color:#796c72}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:15px 0}
+.stat{background:white;border-radius:12px;padding:16px;border-left:4px solid var(--pink)}.stat span{display:block;color:#766872;font-size:13px}.stat strong{font-size:23px;display:block;margin-top:7px}
+table{width:100%;border-collapse:collapse;background:white;border-radius:10px;overflow:hidden;margin:12px 0}th,td{padding:11px;text-align:left;border-bottom:1px solid #f0e6ea;font-size:14px}th{background:#f6e8ed;color:#63354b}
+.tablewrap{overflow-x:auto}.panel{background:white;padding:16px;border-radius:12px;margin:15px 0}.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.empty{padding:24px;text-align:center;color:#867780}.notice{background:#fff3d8;padding:12px;border-radius:9px;color:#694e20;font-size:13px;margin:15px 0}
+footer{text-align:center;padding:25px;color:#8a7a82;font-size:13px}
+@media(max-width:600px){header{padding:18px}header h1{font-size:23px}nav{position:static}nav button{flex:1}th,td{padding:8px;font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+ <div><h1>NS BEAUTY SHOP</h1><p>Beauty, confidence & elegance.</p></div>
+ <div><strong>NAIVASHA, KENYA</strong><br><small>Affordable beauty essentials</small></div>
+</header>
+<nav>
+ <button class="active" onclick="showPage('shop',this)">Shop</button>
+ <button onclick="showPage('cart',this)">Cart (<span id="cartCount">0</span>)</button>
+ <button onclick="showPage('dashboard',this)">Dashboard</button>
+ <button onclick="showPage('inventory',this)">Inventory</button>
+ <button onclick="showPage('sales',this)">Sales</button>
+ <button onclick="showPage('expenses',this)">Expenses</button>
+ <button onclick="showPage('reports',this)">Reports</button>
+</nav>
+<main>
+<section id="shop" class="page active">
+ <div class="hero"><h2>Feel beautiful. Be confident.</h2><p>Discover affordable beauty essentials at NS Beauty Shop.</p><button onclick="showPage('cart')">View shopping cart</button></div>
+ <div class="toolbar"><input id="searchShop" placeholder="Search cosmetics..." oninput="renderShop()"><select id="categoryFilter" onchange="renderShop()"><option value="">All categories</option><option>Skincare</option><option>Makeup</option><option>Hair</option><option>Nails</option><option>Accessories</option><option>Other</option></select></div>
+ <div id="shopProducts" class="products"></div>
+</section>
+<section id="cart" class="page">
+ <h2>Your shopping cart</h2><div id="cartItems" class="panel"></div>
+ <div class="panel"><h3>Customer details</h3><div class="formgrid"><div><label>Customer name</label><input id="customerName" placeholder="Customer name"></div><div><label>Phone number</label><input id="customerPhone" placeholder="07..."></div></div><div class="row"><strong id="cartTotal">Total: KSh 0</strong><button onclick="checkout()">Record sale / Checkout</button></div><p class="muted">Checkout records the sale in this browser's shop records. It does not process online payments.</p></div>
+</section>
+<section id="dashboard" class="page">
+ <h2>Business dashboard</h2><div class="stats" id="stats"></div>
+ <div class="panel"><h3>Quick actions</h3><div class="toolbar"><button onclick="showPage('inventory')">Add a product</button><button onclick="showPage('expenses')">Record an expense</button><button onclick="showPage('reports')">View reports</button></div></div>
+</section>
+<section id="inventory" class="page">
+ <h2>Product inventory</h2><p class="muted">Add products and keep your stock quantities updated.</p>
+ <div class="formgrid">
+  <div><label>Product name</label><input id="pName" placeholder="e.g. Body lotion"></div>
+  <div><label>Category</label><select id="pCategory"><option>Skincare</option><option>Makeup</option><option>Hair</option><option>Nails</option><option>Accessories</option><option>Other</option></select></div>
+  <div><label>Buying price (KSh)</label><input id="pCost" type="number" min="0" placeholder="0"></div>
+  <div><label>Selling price (KSh)</label><input id="pPrice" type="number" min="0" placeholder="0"></div>
+  <div><label>Quantity in stock</label><input id="pQty" type="number" min="0" placeholder="0"></div>
+  <div><label>&nbsp;</label><button onclick="addProduct()">Save product</button></div>
+ </div>
+ <div class="tablewrap"><table><thead><tr><th>Product</th><th>Category</th><th>Buying</th><th>Selling</th><th>Stock</th><th>Action</th></tr></thead><tbody id="inventoryRows"></tbody></table></div>
+</section>
+<section id="sales" class="page">
+ <h2>Sales records</h2><div class="tablewrap"><table><thead><tr><th>Date</th><th>Receipt</th><th>Customer</th><th>Items</th><th>Total</th><th>Profit*</th></tr></thead><tbody id="salesRows"></tbody></table></div><p class="muted">*Estimated gross profit uses the buying prices entered for products and excludes expenses.</p>
+</section>
+<section id="expenses" class="page">
+ <h2>Shop expenses</h2><div class="formgrid">
+  <div><label>Expense description</label><input id="eName" placeholder="e.g. Rent"></div>
+  <div><label>Amount (KSh)</label><input id="eAmount" type="number" min="1" placeholder="0"></div>
+  <div><label>Date</label><input id="eDate" type="date"></div>
+  <div><label>&nbsp;</label><button onclick="addExpense()">Save expense</button></div>
+ </div><div class="tablewrap"><table><thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Action</th></tr></thead><tbody id="expenseRows"></tbody></table></div>
+</section>
+<section id="reports" class="page">
+ <h2>Business reports</h2><div class="stats" id="reportStats"></div>
+ <div class="panel"><h3>Backup your records</h3><p class="muted">Download a copy of your products, sales and expenses. Keep the file somewhere safe.</p><button onclick="exportData()">Download data backup (JSON)</button> <button class="secondary" onclick="document.getElementById('importFile').click()">Restore backup</button><input id="importFile" type="file" accept=".json,application/json" style="display:none" onchange="importData(event)"></div>
+ <div class="notice"><strong>Important:</strong> This is a simple local starter system. Data is saved in this browser on this device. It is not automatically shared between devices, and clearing browser data may erase records. Download backups regularly. The shop page is not published online until you host it.</div>
+</section>
+</main>
+<footer>© <span id="year"></span> NS Beauty Shop · Made with care</footer>
+<script>
+const KEY='nsBeautyShopData_v1';
+let data=loadData(), cart=[];
+function loadData(){try{return JSON.parse(localStorage.getItem(KEY))||{products:[],sales:[],expenses:[]}}catch(e){return {products:[],sales:[],expenses:[]}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));renderAll()}
+function money(n){return 'KSh '+Number(n||0).toLocaleString('en-KE',{maximumFractionDigits:2})}
+function showPage(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');renderAll()}
+function addProduct(){
+ let name=pName.value.trim(),cost=Number(pCost.value),price=Number(pPrice.value),qty=Number(pQty.value),category=pCategory.value;
+ if(!name||pCost.value===''||pPrice.value===''||pQty.value===''||cost<0||price<0||qty<0||!Number.isFinite(qty)){alert('Enter a product name and valid prices and quantity.');return}
+ data.products.push({id:Date.now(),name,category,cost,price,qty});pName.value='';pCost.value='';pPrice.value='';pQty.value='';save();alert('Product saved.');
+}
+function deleteProduct(id){if(confirm('Delete this product?')){data.products=data.products.filter(p=>p.id!==id);save()}}
+function renderShop(){
+ let q=(document.getElementById('searchShop')?.value||'').toLowerCase(),cat=document.getElementById('categoryFilter')?.value||'';
+ let items=data.products.filter(p=>p.name.toLowerCase().includes(q)&&(!cat||p.category===cat));
+ shopProducts.innerHTML=items.length?items.map(p=>`<div class="card"><div class="product-icon">💄</div><small>${esc(p.category)}</small><h3>${esc(p.name)}</h3><div class="price">${money(p.price)}</div><small>${p.qty>0?p.qty+' available':'Out of stock'}</small><p><button ${p.qty<1?'disabled':''} onclick="addToCart(${p.id})">Add to cart</button></p></div>`).join(''):'<div class="empty">No products yet. Add products under Inventory.</div>';
+}
+function addToCart(id){let p=data.products.find(x=>x.id===id);if(!p||p.qty<1)return;let c=cart.find(x=>x.id===id);if(c){if(c.qty>=p.qty){alert('Not enough stock.');return}c.qty++}else cart.push({id,qty:1});renderCart()}
+function changeCart(id,delta){let c=cart.find(x=>x.id===id),p=data.products.find(x=>x.id===id);if(!c)return;c.qty+=delta;if(c.qty<1)cart=cart.filter(x=>x.id!==id);else if(c.qty>p.qty){c.qty=p.qty;alert('Quantity limited to available stock.')}renderCart()}
+function renderCart(){
+ cartCount.textContent=cart.reduce((a,c)=>a+c.qty,0);
+ let total=0;cartItems.innerHTML=cart.length?cart.map(c=>{let p=data.products.find(x=>x.id===c.id);if(!p)return '';total+=p.price*c.qty;return `<div class="row" style="padding:9px 0;border-bottom:1px solid #eee"><span><b>${esc(p.name)}</b><br><small>${money(p.price)} each</small></span><span><button class="secondary" onclick="changeCart(${p.id},-1)">−</button> ${c.qty} <button class="secondary" onclick="changeCart(${p.id},1)">+</button></span><b>${money(p.price*c.qty)}</b></div>`}).join(''):'<div class="empty">Your cart is empty.</div>';
+ cartTotal.textContent='Total: '+money(total);
+}
+function checkout(){
+ if(!cart.length){alert('Your cart is empty.');return}
+ let lines=[],total=0,cost=0;
+ for(let c of cart){let p=data.products.find(x=>x.id===c.id);if(!p||p.qty<c.qty){alert('Stock changed for '+(p?.name||'a product')+'. Please review your cart.');return}lines.push({name:p.name,qty:c.qty,price:p.price,cost:p.cost});total+=p.price*c.qty;cost+=p.cost*c.qty}
+ let receipt='NS-'+Date.now().toString().slice(-8);
+ cart.forEach(c=>{let p=data.products.find(x=>x.id===c.id);p.qty-=c.qty});
+ data.sales.push({receipt,date:new Date().toISOString(),customer:customerName.value.trim()||'Walk-in customer',phone:customerPhone.value.trim(),items:lines,total,profit:total-cost});
+ save();cart=[];customerName.value='';customerPhone.value='';renderCart();alert('Sale recorded. Receipt: '+receipt);showPage('sales');
+}
+function addExpense(){let name=eName.value.trim(),amount=Number(eAmount.value),date=eDate.value||new Date().toISOString().slice(0,10);if(!name||!eAmount.value||amount<=0){alert('Enter an expense description and valid amount.');return}data.expenses.push({id:Date.now(),name,amount,date});eName.value='';eAmount.value='';save();alert('Expense saved.')}
+function deleteExpense(id){if(confirm('Delete this expense?')){data.expenses=data.expenses.filter(e=>e.id!==id);save()}}
+function renderInventory(){inventoryRows.innerHTML=data.products.length?data.products.map(p=>`<tr><td>${esc(p.name)}</td><td>${esc(p.category)}</td><td>${money(p.cost)}</td><td>${money(p.price)}</td><td>${p.qty}</td><td><button class="danger" onclick="deleteProduct(${p.id})">Delete</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No products added yet.</td></tr>'}
+function renderSales(){salesRows.innerHTML=data.sales.length?data.sales.slice().reverse().map(s=>`<tr><td>${new Date(s.date).toLocaleString()}</td><td>${esc(s.receipt)}</td><td>${esc(s.customer)}</td><td>${s.items.map(i=>esc(i.name)+' × '+i.qty).join('<br>')}</td><td>${money(s.total)}</td><td>${money(s.profit)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">No sales recorded yet.</td></tr>'}
+function renderExpenses(){expenseRows.innerHTML=data.expenses.length?data.expenses.slice().reverse().map(e=>`<tr><td>${esc(e.date)}</td><td>${esc(e.name)}</td><td>${money(e.amount)}</td><td><button class="danger" onclick="deleteExpense(${e.id})">Delete</button></td></tr>`).join(''):'<tr><td colspan="4" class="empty">No expenses recorded yet.</td></tr>'}
+function renderStats(){
+ let revenue=data.sales.reduce((a,s)=>a+s.total,0),gross=data.sales.reduce((a,s)=>a+s.profit,0),expenses=data.expenses.reduce((a,e)=>a+e.amount,0),stock=data.products.reduce((a,p)=>a+p.qty,0);
+ let blocks=[['Total sales',money(revenue)],['Gross profit',money(gross)],['Expenses',money(expenses)],['Estimated net profit',money(gross-expenses)],['Products listed',data.products.length],['Units in stock',stock]];
+ let markup=blocks.map(x=>`<div class="stat"><span>${x[0]}</span><strong>${x[1]}</strong></div>`).join('');
+ stats.innerHTML=markup;reportStats.innerHTML=markup;
+}
+function renderAll(){renderShop();renderCart();renderInventory();renderSales();renderExpenses();renderStats()}
+function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='NS-Beauty-Shop-Backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url)}
+function importData(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.products)||!Array.isArray(d.sales)||!Array.isArray(d.expenses))throw Error();if(confirm('Restore this backup? Current records will be replaced.')){data=d;save();alert('Backup restored.')}}catch(e){alert('That backup file is not valid.')}ev.target.value=''};r.readAsText(f)}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+document.getElementById('year').textContent=new Date().getFullYear();document.getElementById('eDate').value=new Date().toISOString().slice(0,10);renderAll();
+</script>
+</body>
+</html>
